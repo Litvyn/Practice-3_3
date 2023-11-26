@@ -1,56 +1,57 @@
 import java.util.List;
 //LinkedList
 public class LinkedList<T> {
-    class Node<T>{
+   class Node<T>{
         T element;
+
         Node<T> next;
-        Node<T> previous ;
+
 
         public Node(T element) {
             this.element = element;
         }
-        Node<T> head;
-        Node<T> current;
-        int countNodes;
+        private Node<T> head;
+        private Node<T> tail;
+        private int size;
+        private Node<T> current;
 
         public void add(T element) {
             Node<T> newNode = new Node<>(element);
             if (head == null) {
-                head = newNode;
+                head = tail = newNode;
             } else {
-                current = head;
-                while (current.next != null) {
-                    current = current.next;
-                }
-                current.next = newNode;
-                newNode.previous = current;
+                tail.next = newNode;
+
             }
 
-            countNodes++;
+            size++;
         }
 
         public void add(int index, T element) {
+            Objects.checkIndex(index,size);
             Node<T> newNode = new Node<>(element);
-
-            if (index == 0) {
+            if(head == null){
+                head = tail = newNode;
+            }else if (index == 0){
                 newNode.next = head;
                 head = newNode;
-            } else {
-                current = head;
-                for (int i = 0; i < index - 1 && current != null; i++) {
+            }else if (index == size){
+                tail.next = newNode;
+                tail = newNode;
+            }else {
+                Node<T> current = head;
+                for (int i = 0 ; i < index; i++){
                     current = current.next;
                 }
-
-                assert current != null;
                 newNode.next = current.next;
                 current.next = newNode;
-                newNode.previous = current;
             }
-            countNodes++;
+            size ++;
+
         }
 
         public void addFirst(T e) {
-            add(0, e);
+            add(0,e);
         }
 
         public void addLast(T e) {
@@ -58,14 +59,19 @@ public class LinkedList<T> {
         }
 
         public T get(int index) {
+            if (index < 0 || index >= size) {
+                throw new IndexOutOfBoundsException();
+            }
+
             current = head;
-            for (int i = 0; i < index - 1 && current != null; i++) {
+            for (int i = 0; i < index; i++) {
                 current = current.next;
             }
-            assert current != null;
 
-            return current.next.element;
+            return head.element;
         }
+
+
 
         public T getFirst() {
             return get(0);
@@ -76,20 +82,27 @@ public class LinkedList<T> {
         }
 
         public T remove(int index) {
+
             if (index == 0) {
                 head = head.next;
                 current = head;
+                if (head == null) {
+                    tail = null;
+                }
             } else {
-                current = head;
+                 current = head;
                 for (int i = 0; i < index - 1; i++) {
                     current = current.next;
                 }
                 current.next = current.next.next;
+                if (current.next == null) {
+                    tail = current;
+                }
             }
-
-            countNodes--;
-
+            size--;
             return current.element;
+
+
         }
 
         public T removeFirst() {
@@ -110,6 +123,7 @@ public class LinkedList<T> {
         }
 
         public void set(int index, T e) {
+
             remove(index);
             add(index, e);
         }
@@ -129,7 +143,7 @@ public class LinkedList<T> {
         }
 
         public int size() {
-            return countNodes;
+            return size;
         }
 
 
